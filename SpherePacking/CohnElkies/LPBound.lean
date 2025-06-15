@@ -376,6 +376,11 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
               rw [PeriodicSpherePacking.numReps']
               exact Nat.card_eq_fintype_card
 
+
+--set_option pp.all true
+--set_option pp.proofs true
+--set_option pp.maxSteps 999999
+#track_sorry calc_aux_1
 -- # NOTE:
 -- There are several summability results stated as intermediate `have`s in the following theorem.
 -- I think their proofs should follow from whatever we define `PSF_Conditions` to be.
