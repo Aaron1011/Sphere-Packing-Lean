@@ -191,6 +191,35 @@ private theorem calc_aux_1 (hd : 0 < d) :
       (∑' (x : ↑(P.centers ∩ D)), (f (0 : EuclideanSpace ℝ (Fin d))).re)
         := by
             have sum_finite := aux4 P D hD_isBounded hd
+            have fintype_centers: Fintype ↑(P.centers ∩ D) := by apply Fintype.ofFinite
+            have my_summable: Summable fun (x: P.centers) ↦ ∑' (y : ↑(P.centers ∩ D)), if h : x.val - y.val = 0 then 0 else (f (x.val - y.val)).re := by
+              simp_rw [tsum_fintype]
+              rw [← summable_abs_iff]
+              apply Summable.of_nonneg_of_le (f := fun x => ∑ (y: ↑(P.centers ∩ D)), |if h : x.val - y.val = 0 then 0 else (f (x.val - y.val)).re|)
+              . simp
+              . intro x
+                rw [← Real.norm_eq_abs]
+                simp_rw [← Real.norm_eq_abs]
+                apply norm_sum_le
+              . apply Summable.of_nonneg_of_le (f := fun x => ∑ (y: ↑(P.centers ∩ D)), |(f (x.val - y.val)).re|)
+                . intro b
+                  refine Fintype.sum_nonneg ?_
+                  rw [Pi.le_def]
+                  intro x
+                  simp
+              rw [← summable_abs_iff]
+              apply Summable.of_nonneg_of_le (by simp) (?_) (f := fun x => ∑' (y : ↑(P.centers ∩ D)), ‖if h : x.val - y.val = 0 then 0 else (f (x.val - y.val)).re‖) ?_
+              . intro b
+                rw [← Real.norm_eq_abs]
+                apply norm_tsum_le_tsum_norm
+                apply Summable.of_norm_bounded (g := fun x => |(f (b.val - x.val)).re|)
+                . sorry
+                . intro a
+                  simp
+                  by_cases b_minus_eq: b.val - a.val = 0
+                  . simp [b_minus_eq]
+                  . simp [b_minus_eq]
+              . sorry
             conv =>
               rhs
               rhs
@@ -257,7 +286,20 @@ private theorem calc_aux_1 (hd : 0 < d) :
                 dsimp [Ne] at x_neq_b
                 rw [← sub_eq_zero] at x_neq_b
                 simp [x_neq_b]
-            . sorry
+            .
+              rw [← summable_abs_iff]
+              apply Summable.of_nonneg_of_le (by simp) (?_) (f := fun x => ∑' (y : ↑(P.centers ∩ D)), ‖if h : x.val - y.val = 0 then 0 else (f (x.val - y.val)).re‖) ?_
+              . intro b
+                rw [← Real.norm_eq_abs]
+                apply norm_tsum_le_tsum_norm
+                apply Summable.of_norm_bounded (g := fun x => |(f (b.val - x.val)).re|)
+                . sorry
+                . intro a
+                  simp
+                  by_cases b_minus_eq: b.val - a.val = 0
+                  . simp [b_minus_eq]
+                  . simp [b_minus_eq]
+              . sorry
             .
               apply summable_of_finite_support
               -- TODO - is there a better way of writing (P.centers ∩ D) when dealing with subtypes?
