@@ -182,8 +182,9 @@ bounded above by the Cohn-Elkies bound.
 
 
 include hP
+set_option maxHeartbeats 500000 in
 open Classical in
-private theorem calc_aux_1 (hd : 0 < d) :
+private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
   ∑' x : P.centers, ∑' y : ↑(P.centers ∩ D), (f (x - ↑y)).re
   ≤ ↑(P.numReps' hd hD_isBounded) * (f 0).re := calc
   ∑' x : P.centers, ∑' y : ↑(P.centers ∩ D), (f (x - ↑y)).re
@@ -213,21 +214,52 @@ private theorem calc_aux_1 (hd : 0 < d) :
                   intro x hx
                   split_ifs <;> simp
                 . have mem_l1 := SchwartzMap.memLp f 1
+                  by_cases inter_nonempty: Nonempty (↑(P.centers ∩ D))
+                  .
+                    have max_image := fun (x: P.centers) => Finset.exists_max_image Finset.univ (fun (y: ↑(P.centers ∩ D)) => |(f (x.val  - y.val)).re|) (by (
+                      apply Finset.univ_nonempty
+                    ))
+                    -- Finset.sum_le_card_nsmul
+                    apply Summable.of_nonneg_of_le (f := (fun (x: P.centers) => (Finset.univ (α := ↑(P.centers ∩ D))).card • |(f (x.val - Classical.choose (max_image x))).re|))
+                    . intro b
+                      positivity
+                    . intro x
+                      apply Finset.sum_le_card_nsmul
+                      intro y hy
+                      have f_le_max := (Classical.choose_spec (max_image x)).2 y hy
+                      exact f_le_max
 
-                  sorry
-              rw [← summable_abs_iff]
-              apply Summable.of_nonneg_of_le (by simp) (?_) (f := fun x => ∑' (y : ↑(P.centers ∩ D)), ‖if h : x.val - y.val = 0 then 0 else (f (x.val - y.val)).re‖) ?_
-              . intro b
-                rw [← Real.norm_eq_abs]
-                apply norm_tsum_le_tsum_norm
-                apply Summable.of_norm_bounded (g := fun x => |(f (b.val - x.val)).re|)
-                . sorry
-                . intro a
-                  simp
-                  by_cases b_minus_eq: b.val - a.val = 0
-                  . simp [b_minus_eq]
-                  . simp [b_minus_eq]
-              . sorry
+                    apply Summable.const_smul
+                    rw [summable_abs_iff]
+                    have summable_f_re: Summable (fun x => (f x).re) := by
+                      dsimp [Summable]
+                      have f_sum := hf.1
+                      dsimp [Summable] at f_sum
+                      use (Classical.choose f_sum).re
+                      apply Complex.hasSum_re
+                      exact Classical.choose_spec f_sum
+                    have foo := Summable.comp_injective (f := fun x => (f x).re) (i := fun x => x.val - (Classical.choose (max_image x))) summable_f_re (by sorry)
+                    exact foo
+                    -- TODO - add 'Complex.summable_re'
+
+
+
+                  . rw [not_nonempty_iff] at inter_nonempty
+                    simp_rw [Finset.sum_of_isEmpty]
+                    apply summable_zero
+              -- rw [← summable_abs_iff]
+              -- apply Summable.of_nonneg_of_le (by simp) (?_) (f := fun x => ∑' (y : ↑(P.centers ∩ D)), ‖if h : x.val - y.val = 0 then 0 else (f (x.val - y.val)).re‖) ?_
+              -- . intro b
+              --   rw [← Real.norm_eq_abs]
+              --   apply norm_tsum_le_tsum_norm
+              --   apply Summable.of_norm_bounded (g := fun x => |(f (b.val - x.val)).re|)
+              --   . sorry
+              --   . intro a
+              --     simp
+              --     by_cases b_minus_eq: b.val - a.val = 0
+              --     . simp [b_minus_eq]
+              --     . simp [b_minus_eq]
+              -- . sorry
             conv =>
               rhs
               rhs
@@ -376,7 +408,7 @@ private theorem calc_aux_1 (hd : 0 < d) :
 -- I think their proofs should follow from whatever we define `PSF_Conditions` to be.
 -- If there are assumptions needed beyond PSF, we should require them here, not in `PSF_Conditions`.
 set_option maxHeartbeats 200000
-private theorem calc_steps (hd : 0 < d) :
+private theorem calc_steps (hd : 0 < d):
     ↑(P.numReps' hd hD_isBounded) * (f 0).re ≥ ↑(P.numReps' hd hD_isBounded) ^ 2 *
     (𝓕 f 0).re / ZLattice.covolume P.lattice := by
   have : Fact (0 < d) := ⟨hd⟩
