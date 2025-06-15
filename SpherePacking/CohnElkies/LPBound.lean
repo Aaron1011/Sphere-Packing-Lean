@@ -221,6 +221,24 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
                     --  apply Finset.univ_nonempty
                     --))
                     -- Finset.sum_le_card_nsmul
+                    apply summable_sum
+                    intro y hy
+
+                    have summable_f_re: Summable (fun x => (f x).re) := by
+                      dsimp [Summable]
+                      have f_sum := hf.1
+                      dsimp [Summable] at f_sum
+                      use (Classical.choose f_sum).re
+                      apply Complex.hasSum_re
+                      exact Classical.choose_spec f_sum
+                    rw [summable_abs_iff]
+                    have bar := Summable.comp_injective (f := fun x => (f x).re) (i := fun (x: P.centers) => x.val - y.val) summable_f_re (by simp)
+                    apply bar
+
+
+                    dsimp [Summable]
+                    apply (hasSum_sum (s := Finset.univ) ?_).summable
+                    apply hasSum_sum
                     apply Summable.of_nonneg_of_le (f := (fun (x: P.centers) => (Finset.univ (α := ↑(P.centers ∩ D))).card • ((SchwartzMap.seminorm ℂ 0 0) f)))
                     . intro b
                       positivity
@@ -235,13 +253,7 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
 
                     apply Summable.const_smul
                     rw [summable_abs_iff]
-                    have summable_f_re: Summable (fun x => (f x).re) := by
-                      dsimp [Summable]
-                      have f_sum := hf.1
-                      dsimp [Summable] at f_sum
-                      use (Classical.choose f_sum).re
-                      apply Complex.hasSum_re
-                      exact Classical.choose_spec f_sum
+
                     have foo := Summable.comp_injective (f := fun x => (f x).re) (i := fun x => x.val - (Classical.choose (max_image x))) summable_f_re (by
                       intro x y hxy
                       beta_reduce at hxy
