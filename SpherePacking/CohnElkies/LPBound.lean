@@ -239,7 +239,10 @@ private theorem calc_aux_1 (hd : 0 < d) :
                     intro h
                     simp_all only [ne_eq, ge_iff_le, nonempty_subtype, not_true_eq_false, x_in]
                 . sorry
-                . sorry
+                .
+                  dsimp [Summable]
+                  use (f 0).re
+                  apply hasSum_ite_eq
               .
                 simp [hx]
                 apply tsum_congr
@@ -254,7 +257,10 @@ private theorem calc_aux_1 (hd : 0 < d) :
                 rw [← sub_eq_zero] at x_neq_b
                 simp [x_neq_b]
             . sorry
-            . sorry
+            .
+              dsimp [Summable]
+              use (f 0).re
+              apply hasSum_ite_eq
 
 
 
