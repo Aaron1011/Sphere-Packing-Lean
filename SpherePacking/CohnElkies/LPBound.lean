@@ -190,6 +190,7 @@ private theorem calc_aux_1 (hd : 0 < d) :
       if h : x - (y : EuclideanSpace ℝ (Fin d)) = 0 then 0 else (f (x - ↑y)).re) +
       (∑' (x : ↑(P.centers ∩ D)), (f (0 : EuclideanSpace ℝ (Fin d))).re)
         := by
+            have sum_finite := aux4 P D hD_isBounded hd
             conv =>
               rhs
               rhs
@@ -258,9 +259,24 @@ private theorem calc_aux_1 (hd : 0 < d) :
                 simp [x_neq_b]
             . sorry
             .
-              dsimp [Summable]
-              use (f 0).re
-              apply hasSum_ite_eq
+              apply summable_of_finite_support
+              -- TODO - is there a better way of writing (P.centers ∩ D) when dealing with subtypes?
+              apply Set.Finite.subset  (s := {x: ↑P.centers | x.val ∈ D})
+              . rw [Set.finite_coe_iff] at sum_finite
+                apply Set.Finite.of_finite_image (f := Subtype.val)
+                .
+                  conv =>
+                    arg 1
+                    equals (P.centers ∩ D) =>
+                      ext a
+                      simp
+                      rw [and_comm]
+                  exact sum_finite
+                . simp
+              . intro x hx
+                simp at hx
+                simp
+                exact hx.1
 
 
 
