@@ -232,7 +232,14 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
                       apply Complex.hasSum_re
                       exact Classical.choose_spec f_sum
                     rw [summable_abs_iff]
-                    have bar := Summable.comp_injective (f := fun x => (f x).re) (i := fun (x: P.centers) => x.val - y.val) summable_f_re (by simp)
+                    -- TODO - find a simpler injectivity proof
+                    have bar := Summable.comp_injective (f := fun x => (f x).re) (i := fun (x: P.centers) => x.val - y.val) summable_f_re (by
+                      intro a b hab
+                      beta_reduce at hab
+                      field_simp at hab
+                      norm_cast at hab
+                      exact SetCoe.ext hab
+                    )
                     apply bar
 
 
