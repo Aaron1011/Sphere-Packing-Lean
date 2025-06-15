@@ -183,6 +183,7 @@ bounded above by the Cohn-Elkies bound.
 
 include hP
 set_option maxHeartbeats 500000 in
+set_option pp.proofs true in
 open Classical in
 private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
   ∑' x : P.centers, ∑' y : ↑(P.centers ∩ D), (f (x - ↑y)).re
@@ -238,7 +239,16 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
                       use (Classical.choose f_sum).re
                       apply Complex.hasSum_re
                       exact Classical.choose_spec f_sum
-                    have foo := Summable.comp_injective (f := fun x => (f x).re) (i := fun x => x.val - (Classical.choose (max_image x))) summable_f_re (by sorry)
+                    have foo := Summable.comp_injective (f := fun x => (f x).re) (i := fun x => x.val - (Classical.choose (max_image x))) summable_f_re (by
+                      intro x y hxy
+                      beta_reduce at hxy
+                      have foo := (sub_left_inj (b := x.val) (c := y.val) (a := (Classical.choose (max_image x)).val))
+                      exact foo.mp hxy
+                      rw [foo] at hxy
+                      simp [sub_left_inj] at hxy
+                      exact hxy
+
+                    )
                     exact foo
                     -- TODO - add 'Complex.summable_re'
 
