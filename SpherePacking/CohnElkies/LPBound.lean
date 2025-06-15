@@ -214,10 +214,6 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
                 . have mem_l1 := SchwartzMap.memLp f 1
                   by_cases inter_nonempty: Nonempty (↑(P.centers ∩ D))
                   .
-                    --have max_image := fun (x: P.centers) => Finset.exists_max_image Finset.univ (fun (y: ↑(P.centers ∩ D)) => |--(f (x.val  - y.val)).re|) (by (
-                    --  apply Finset.univ_nonempty
-                    --))
-                    -- Finset.sum_le_card_nsmul
                     apply summable_sum
                     intro y hy
 
@@ -234,26 +230,12 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
                       intro a b hab
                       beta_reduce at hab
                       field_simp at hab
-                      norm_cast at hab
                       exact SetCoe.ext hab
                     )
                     apply bar
                   . rw [not_nonempty_iff] at inter_nonempty
                     simp_rw [Finset.sum_of_isEmpty]
                     apply summable_zero
-              -- rw [← summable_abs_iff]
-              -- apply Summable.of_nonneg_of_le (by simp) (?_) (f := fun x => ∑' (y : ↑(P.centers ∩ D)), ‖if h : x.val - y.val = 0 then 0 else (f (x.val - y.val)).re‖) ?_
-              -- . intro b
-              --   rw [← Real.norm_eq_abs]
-              --   apply norm_tsum_le_tsum_norm
-              --   apply Summable.of_norm_bounded (g := fun x => |(f (b.val - x.val)).re|)
-              --   . sorry
-              --   . intro a
-              --     simp
-              --     by_cases b_minus_eq: b.val - a.val = 0
-              --     . simp [b_minus_eq]
-              --     . simp [b_minus_eq]
-              -- . sorry
             conv =>
               rhs
               rhs
@@ -335,9 +317,6 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
                   . simp [b_minus_eq]
                   . simp [b_minus_eq]
               .
-                  -- rw [summable_abs_iff]
-                  -- apply summable_nat_add_iff
-                  -- apply summable_of_isBigO ((Real.summable_abs_int_rpow (b := 2) (by simp))) (by sorry)
                 apply my_summable
             .
               apply summable_of_finite_support
