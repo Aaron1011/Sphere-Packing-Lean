@@ -195,15 +195,12 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
         := by
             have sum_finite := aux4 P D hD_isBounded hd
             have fintype_centers: Fintype ↑(P.centers ∩ D) := by apply Fintype.ofFinite
-            have my_summable: Summable fun (x: P.centers) ↦ ∑' (y : ↑(P.centers ∩ D)), if h : x.val - y.val = 0 then 0 else (f (x.val - y.val)).re := by
+            have my_summable: Summable fun (x: P.centers) ↦ ∑' (y : ↑(P.centers ∩ D)), |if h : x.val - y.val = 0 then 0 else (f (x.val - y.val)).re| := by
               simp_rw [tsum_fintype]
-              rw [← summable_abs_iff]
               apply Summable.of_nonneg_of_le (f := fun x => ∑ (y: ↑(P.centers ∩ D)), |if h : x.val - y.val = 0 then 0 else (f (x.val - y.val)).re|)
+              . intro b
+                positivity
               . simp
-              . intro x
-                rw [← Real.norm_eq_abs]
-                simp_rw [← Real.norm_eq_abs]
-                apply norm_sum_le
               . apply Summable.of_nonneg_of_le (f := fun x => ∑ (y: ↑(P.centers ∩ D)), |(f (x.val - y.val)).re|)
                 . intro b
                   refine Fintype.sum_nonneg ?_
@@ -241,41 +238,6 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
                       exact SetCoe.ext hab
                     )
                     apply bar
-
-
-                    dsimp [Summable]
-                    apply (hasSum_sum (s := Finset.univ) ?_).summable
-                    apply hasSum_sum
-                    apply Summable.of_nonneg_of_le (f := (fun (x: P.centers) => (Finset.univ (α := ↑(P.centers ∩ D))).card • ((SchwartzMap.seminorm ℂ 0 0) f)))
-                    . intro b
-                      positivity
-                    . intro x
-                      apply Finset.sum_le_card_nsmul
-                      intro y hy
-                      rw [← Real.norm_eq_abs]
-                      have foo := RCLike.abs_re_le_norm (z := f (x.val - y.val))
-                      simp at foo
-                      apply LE.le.trans foo
-                      apply SchwartzMap.norm_le_seminorm
-
-                    apply Summable.const_smul
-                    rw [summable_abs_iff]
-
-                    have foo := Summable.comp_injective (f := fun x => (f x).re) (i := fun x => x.val - (Classical.choose (max_image x))) summable_f_re (by
-                      intro x y hxy
-                      beta_reduce at hxy
-                      have foo := (sub_left_inj (b := x.val) (c := y.val) (a := (Classical.choose (max_image x)).val))
-                      exact foo.mp hxy
-                      rw [foo] at hxy
-                      simp [sub_left_inj] at hxy
-                      exact hxy
-
-                    )
-                    exact foo
-                    -- TODO - add 'Complex.summable_re'
-
-
-
                   . rw [not_nonempty_iff] at inter_nonempty
                     simp_rw [Finset.sum_of_isEmpty]
                     apply summable_zero
@@ -376,7 +338,7 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
                   -- rw [summable_abs_iff]
                   -- apply summable_nat_add_iff
                   -- apply summable_of_isBigO ((Real.summable_abs_int_rpow (b := 2) (by simp))) (by sorry)
-                sorry
+                apply my_summable
             .
               apply summable_of_finite_support
               -- TODO - is there a better way of writing (P.centers ∩ D) when dealing with subtypes?
