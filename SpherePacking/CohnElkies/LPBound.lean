@@ -746,7 +746,7 @@ section Main_Theorem
 
 include d f hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂
 
-theorem LinearProgrammingBound (hd : 0 < d) : SpherePackingConstant d ≤
+theorem LinearProgrammingBound (hd : 0 < d) (hf: PSF_Conditions f) : SpherePackingConstant d ≤
   (f 0).re.toNNReal / (𝓕 f 0).re.toNNReal * volume (ball (0 : EuclideanSpace ℝ (Fin d)) (1 / 2))
   := by
   rw [← periodic_constant_eq_constant hd,
@@ -764,6 +764,6 @@ theorem LinearProgrammingBound (hd : 0 < d) : SpherePackingConstant d ≤
       (P.basis_index_equiv)
     exact LinearProgrammingBound' hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂ hP
       (fundamentalDomain_isBounded (Basis.ofZLatticeBasis ℝ P.lattice b))
-      (P.fundamental_domain_unique_covers b) hd
+      (P.fundamental_domain_unique_covers b) hd hf
 
 end Main_Theorem
