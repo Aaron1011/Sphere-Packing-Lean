@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.PSeries
 
 import SpherePacking.CohnElkies.Prereqs
 import SpherePacking.ForMathlib.VolumeOfBalls
@@ -207,6 +208,13 @@ private theorem calc_aux_1 (hd : 0 < d) :
                   rw [Pi.le_def]
                   intro x
                   simp
+                . intro b
+                  apply Finset.sum_le_sum
+                  intro x hx
+                  split_ifs <;> simp
+                . have mem_l1 := SchwartzMap.memLp f 1
+
+                  sorry
               rw [← summable_abs_iff]
               apply Summable.of_nonneg_of_le (by simp) (?_) (f := fun x => ∑' (y : ↑(P.centers ∩ D)), ‖if h : x.val - y.val = 0 then 0 else (f (x.val - y.val)).re‖) ?_
               . intro b
@@ -293,13 +301,18 @@ private theorem calc_aux_1 (hd : 0 < d) :
                 rw [← Real.norm_eq_abs]
                 apply norm_tsum_le_tsum_norm
                 apply Summable.of_norm_bounded (g := fun x => |(f (b.val - x.val)).re|)
-                . sorry
+                .
+                  apply Summable.of_finite
                 . intro a
                   simp
                   by_cases b_minus_eq: b.val - a.val = 0
                   . simp [b_minus_eq]
                   . simp [b_minus_eq]
-              . sorry
+              .
+                  -- rw [summable_abs_iff]
+                  -- apply summable_nat_add_iff
+                  -- apply summable_of_isBigO ((Real.summable_abs_int_rpow (b := 2) (by simp))) (by sorry)
+                sorry
             .
               apply summable_of_finite_support
               -- TODO - is there a better way of writing (P.centers ∩ D) when dealing with subtypes?
