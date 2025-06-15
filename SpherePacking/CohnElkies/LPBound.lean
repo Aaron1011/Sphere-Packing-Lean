@@ -402,7 +402,7 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
 -- I think their proofs should follow from whatever we define `PSF_Conditions` to be.
 -- If there are assumptions needed beyond PSF, we should require them here, not in `PSF_Conditions`.
 set_option maxHeartbeats 200000
-private theorem calc_steps (hd : 0 < d):
+private theorem calc_steps (hd : 0 < d) (hf: PSF_Conditions f) :
     ↑(P.numReps' hd hD_isBounded) * (f 0).re ≥ ↑(P.numReps' hd hD_isBounded) ^ 2 *
     (𝓕 f 0).re / ZLattice.covolume P.lattice := by
   have : Fact (0 < d) := ⟨hd⟩
@@ -413,7 +413,7 @@ private theorem calc_steps (hd : 0 < d):
         := by
             rw [ge_iff_le]
             exact calc_aux_1 hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂ hP
-              hD_isBounded hd
+              hD_isBounded hd hf
   _ = ∑' (x : ↑(P.centers ∩ D)) (y : ↑(P.centers ∩ D)) (ℓ : P.lattice),
       (f (↑x - ↑y + ↑ℓ)).re
         :=  by
@@ -637,7 +637,7 @@ variable (hD_unique_covers : ∀ x, ∃! g : P.lattice, g +ᵥ x ∈ D)
 
 include d f hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂ P hP D hD_isBounded hD_unique_covers
 
-theorem LinearProgrammingBound' (hd : 0 < d) :
+theorem LinearProgrammingBound' (hd : 0 < d) (hf: PSF_Conditions f) :
   P.density ≤ (f 0).re.toNNReal / (𝓕 f 0).re.toNNReal *
   volume (ball (0 : EuclideanSpace ℝ (Fin d)) (1 / 2)) := by
   -- HUGE TODO: Get the periodic density formula in terms of some `D`.
@@ -738,7 +738,7 @@ theorem LinearProgrammingBound' (hd : 0 < d) :
       -- We can now get rid of the `toNNReal`s and use `hCalc` to finish the proof!
       rw [hRHSCast, hLHSCast, ENNReal.coe_le_coe]
       exact Real.toNNReal_le_toNNReal hCalc
-  exact calc_steps hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂ hP hD_isBounded hd
+  exact calc_steps hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂ hP hD_isBounded hd hf
 
 end Main_Theorem_For_One_Packing
 
