@@ -178,7 +178,10 @@ In this section, we will prove that the density of every periodic sphere packing
 bounded above by the Cohn-Elkies bound.
 -/
 
+
+
 include hP
+open Classical in
 private theorem calc_aux_1 (hd : 0 < d) :
   ∑' x : P.centers, ∑' y : ↑(P.centers ∩ D), (f (x - ↑y)).re
   ≤ ↑(P.numReps' hd hD_isBounded) * (f 0).re := calc
@@ -187,10 +190,74 @@ private theorem calc_aux_1 (hd : 0 < d) :
       if h : x - (y : EuclideanSpace ℝ (Fin d)) = 0 then 0 else (f (x - ↑y)).re) +
       (∑' (x : ↑(P.centers ∩ D)), (f (0 : EuclideanSpace ℝ (Fin d))).re)
         := by
+            conv =>
+              rhs
+              rhs
+
+              equals ∑' (x : ↑(P.centers)), if x.val ∈ D then  (f 0).re else 0 =>
+                rw [tsum_subtype  (f := fun x => (f 0).re)]
+                rw [tsum_subtype (f := fun x => if ↑x ∈ D then (f 0).re else 0)]
+                apply tsum_congr
+                intro p
+                simp [Set.indicator]
+                rw [ite_and]
             -- First, we need to un-distribute the tsums on the RHS.
             -- Then, we need to use some sort of `tsum_ite_eq`.
             -- Both of the above require some summability stuff.
-            sorry
+            rw [← Summable.tsum_add]
+            .
+              apply tsum_congr
+              intro x
+              by_cases hx: x.val ∈ D
+              .
+                let x_in: ↑(P.centers ∩ D) := ⟨x, by
+                  simp
+                  exact hx
+                ⟩
+                simp [hx]
+                conv =>
+                  rhs
+                  rhs
+                  rw [← tsum_ite_eq (b := x_in) (a := (f 0).re)]
+                rw [← Summable.tsum_add]
+                . apply tsum_congr
+                  intro y
+                  simp [x_in]
+                  by_cases x_eq_y: x.val - y.val = 0
+                  .
+                    simp [x_eq_y]
+                    norm_cast
+                    have x_eq_y: x.val = y.val := by
+                      apply sub_eq_zero.mp x_eq_y
+                    simp at x_eq_y
+                    simp [x_eq_y]
+
+                  .
+                    simp [x_eq_y]
+                    rw [sub_eq_zero] at x_eq_y
+                    norm_cast
+                    intro h
+                    simp_all only [ne_eq, ge_iff_le, nonempty_subtype, not_true_eq_false, x_in]
+                . sorry
+                . sorry
+              .
+                simp [hx]
+                apply tsum_congr
+                intro b
+                have x_neq_b: x.val ≠ b.val := by
+                  by_contra!
+                  rw [this] at hx
+                  have b_in_d := b.property.right
+                  contradiction
+
+                dsimp [Ne] at x_neq_b
+                rw [← sub_eq_zero] at x_neq_b
+                simp [x_neq_b]
+            . sorry
+            . sorry
+
+
+
   _ ≤ ∑' (x : ↑(P.centers ∩ D)), (f (0 : EuclideanSpace ℝ (Fin d))).re
         := by
             rw [← tsub_nonpos]
