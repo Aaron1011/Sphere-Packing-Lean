@@ -217,18 +217,21 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
                 . have mem_l1 := SchwartzMap.memLp f 1
                   by_cases inter_nonempty: Nonempty (↑(P.centers ∩ D))
                   .
-                    have max_image := fun (x: P.centers) => Finset.exists_max_image Finset.univ (fun (y: ↑(P.centers ∩ D)) => |(f (x.val  - y.val)).re|) (by (
-                      apply Finset.univ_nonempty
-                    ))
+                    --have max_image := fun (x: P.centers) => Finset.exists_max_image Finset.univ (fun (y: ↑(P.centers ∩ D)) => |--(f (x.val  - y.val)).re|) (by (
+                    --  apply Finset.univ_nonempty
+                    --))
                     -- Finset.sum_le_card_nsmul
-                    apply Summable.of_nonneg_of_le (f := (fun (x: P.centers) => (Finset.univ (α := ↑(P.centers ∩ D))).card • |(f (x.val - Classical.choose (max_image x))).re|))
+                    apply Summable.of_nonneg_of_le (f := (fun (x: P.centers) => (Finset.univ (α := ↑(P.centers ∩ D))).card • ((SchwartzMap.seminorm ℂ 0 0) f)))
                     . intro b
                       positivity
                     . intro x
                       apply Finset.sum_le_card_nsmul
                       intro y hy
-                      have f_le_max := (Classical.choose_spec (max_image x)).2 y hy
-                      exact f_le_max
+                      rw [← Real.norm_eq_abs]
+                      have foo := RCLike.abs_re_le_norm (z := f (x.val - y.val))
+                      simp at foo
+                      apply LE.le.trans foo
+                      apply SchwartzMap.norm_le_seminorm
 
                     apply Summable.const_smul
                     rw [summable_abs_iff]
