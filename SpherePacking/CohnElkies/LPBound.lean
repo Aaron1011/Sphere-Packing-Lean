@@ -239,7 +239,7 @@ private theorem calc_aux_1 (hd : 0 < d) :
                     norm_cast
                     intro h
                     simp_all only [ne_eq, ge_iff_le, nonempty_subtype, not_true_eq_false, x_in]
-                . sorry
+                . apply Summable.of_finite
                 .
                   dsimp [Summable]
                   use (f 0).re
