@@ -185,7 +185,7 @@ include hP
 set_option maxHeartbeats 500000 in
 set_option pp.proofs true in
 open Classical in
-private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
+private theorem calc_aux_1 (hd : 0 < d) (hf: Summable f)  :
   ∑' x : P.centers, ∑' y : ↑(P.centers ∩ D), (f (x - ↑y)).re
   ≤ ↑(P.numReps' hd hD_isBounded) * (f 0).re := calc
   ∑' x : P.centers, ∑' y : ↑(P.centers ∩ D), (f (x - ↑y)).re
@@ -219,7 +219,7 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
 
                     have summable_f_re: Summable (fun x => (f x).re) := by
                       dsimp [Summable]
-                      have f_sum := hf.1
+                      have f_sum := hf
                       dsimp [Summable] at f_sum
                       use (Classical.choose f_sum).re
                       apply Complex.hasSum_re
@@ -376,17 +376,12 @@ private theorem calc_aux_1 (hd : 0 < d) (hf: PSF_Conditions f)  :
               rw [PeriodicSpherePacking.numReps']
               exact Nat.card_eq_fintype_card
 
-
---set_option pp.all true
---set_option pp.proofs true
---set_option pp.maxSteps 999999
-#track_sorry calc_aux_1
 -- # NOTE:
 -- There are several summability results stated as intermediate `have`s in the following theorem.
 -- I think their proofs should follow from whatever we define `PSF_Conditions` to be.
 -- If there are assumptions needed beyond PSF, we should require them here, not in `PSF_Conditions`.
 set_option maxHeartbeats 200000
-private theorem calc_steps (hd : 0 < d) (hf: PSF_Conditions f) :
+private theorem calc_steps (hd : 0 < d) (hf: Summable f) :
     ↑(P.numReps' hd hD_isBounded) * (f 0).re ≥ ↑(P.numReps' hd hD_isBounded) ^ 2 *
     (𝓕 f 0).re / ZLattice.covolume P.lattice := by
   have : Fact (0 < d) := ⟨hd⟩
@@ -621,7 +616,7 @@ variable (hD_unique_covers : ∀ x, ∃! g : P.lattice, g +ᵥ x ∈ D)
 
 include d f hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂ P hP D hD_isBounded hD_unique_covers
 
-theorem LinearProgrammingBound' (hd : 0 < d) (hf: PSF_Conditions f) :
+theorem LinearProgrammingBound' (hd : 0 < d) (hf: Summable f) :
   P.density ≤ (f 0).re.toNNReal / (𝓕 f 0).re.toNNReal *
   volume (ball (0 : EuclideanSpace ℝ (Fin d)) (1 / 2)) := by
   -- HUGE TODO: Get the periodic density formula in terms of some `D`.
@@ -730,7 +725,7 @@ section Main_Theorem
 
 include d f hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂
 
-theorem LinearProgrammingBound (hd : 0 < d) (hf: PSF_Conditions f) : SpherePackingConstant d ≤
+theorem LinearProgrammingBound (hd : 0 < d) (hf: Summable f) : SpherePackingConstant d ≤
   (f 0).re.toNNReal / (𝓕 f 0).re.toNNReal * volume (ball (0 : EuclideanSpace ℝ (Fin d)) (1 / 2))
   := by
   rw [← periodic_constant_eq_constant hd,
