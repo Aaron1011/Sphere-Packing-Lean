@@ -17,6 +17,7 @@ open scoped FourierTransform ENNReal SchwartzMap
 open SpherePacking Metric BigOperators Pointwise Filter MeasureTheory Complex Real ZSpan
   Bornology Summable
 
+
 variable {d : ℕ}
 
 /-
@@ -355,7 +356,20 @@ private theorem calc_steps (hd : 0 < d) (hf: Summable f) :
   _ = (∑' (x : ↑(P.centers ∩ D)) (y : ↑(P.centers ∩ D)) (ℓ : P.lattice),
       f (↑x - ↑y + ↑ℓ)).re
         := by
-            -- rw [re_tsum hPSF.1] -- Needs some sort of summability over subsets...?
+            rw [re_tsum]
+            conv =>
+              rhs
+              arg 1
+              intro a
+              rw [re_tsum]
+              rfl
+              tactic =>
+                sorry
+
+
+            simp_rw [re_tsum]
+             -- Needs some sort of summability over subsets...?
+
             sorry
   _ = (∑' x : ↑(P.centers ∩ D),
       ∑' y : ↑(P.centers ∩ D), (1 / ZLattice.covolume P.lattice) *
