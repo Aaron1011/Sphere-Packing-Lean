@@ -115,7 +115,16 @@ lemma aux_7 (a : ℤ) :
 
 include hz in
 lemma aux_8 : 0 < ∏' (n : ℕ+), (1 - rexp (-2 * π * ↑↑n * z.im)) ^ 24 := by
-  sorry
+  conv =>
+    lhs
+    equals ∏' (n : ℕ+), 0 =>
+      rw [tprod_of_exists_eq_zero]
+      use 1
+
+
+
+  apply Multipliable.tprod_lt_tprod
+  -sorry
 
 lemma aux_ring (i : ℕ) : (I * ↑π * ↑i * z) = I * ((↑π * ↑i) * z) := by ring
 
