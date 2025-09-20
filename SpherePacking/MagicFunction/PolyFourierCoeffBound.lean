@@ -271,7 +271,63 @@ private lemma step_11 :
   gcongr
   · exact le_of_lt (aux_8 z hz)
   · sorry
-  · sorry
+  ·
+    apply summable_of_isBigO_nat' (g := fun i => (i ^ k) * rexp (-π * ↑i / 2))
+    . conv =>
+        arg 1
+        intro i
+        rhs
+        arg 1
+        equals -(π / 2) * i =>
+          ring
+      apply Real.summable_pow_mul_exp_neg_nat_mul
+      positivity
+    .
+
+      apply Asymptotics.IsBigO.mul
+      .
+        
+        have other := Asymptotics.IsBigO.natCast_atTop (f := fun (x: ℤ) => ‖c (x + n₀)‖) (g := fun (x: ℤ) => (x : ℝ) ^ k) ?_
+        . simpa using other
+        . 
+          simp
+        -- conv =>
+        --   lhs
+        --   equals (fun x => ‖c x‖) ∘ (fun (x: ℕ) => x + n₀) =>
+        --     ext a
+        --     simp
+        
+        -- conv =>
+        --   rhs
+        --   equals ((fun x ↦ (x: ℝ) ^ k) ∘ (fun x => (x: ℤ) - n₀)) ∘ (fun (x: ℕ) => x + n₀) =>
+        --     ext a
+        --     simp
+        -- rw [← Asymptotics.isBigO_map]
+
+        -- have foo := Asymptotics.isBigO_map
+
+        -- have bar := Asymptotics.IsBigO.natCast_atTop hpoly
+
+        -- have foo := Filter.map_atTop_eq_of_gc (f := fun (n: ℕ) => n + n₀) (g := fun (n: ℤ) => (n: ℤ) - n₀) 0 (by
+        --   intro a b hab
+        --   simpa using hab
+        -- ) ?_ ?_
+        -- . conv =>
+        --     arg 1
+
+        --   sorry
+        -- . intro a b hb
+        --   simp
+        --   omega
+        -- . intro c hc
+        --   simp
+
+        -- have foo := Filter.map_add_atTop_eq_nat n₀
+        -- conv at hpoly =>
+        --   arg 1
+        --   equals Filter.map (fun (a : ℕ) => a + n₀) atTop =>
+        --     rw [Filter.map_add_atTop_eq_nat]
+      . apply Asymptotics.isBigO_refl
   · simp only [div_eq_mul_inv]
     -- **This is where we use the fact that c is eventually polynomial in n.**
     have hnorm : ‖(rexp (-π * 2⁻¹) : ℂ)‖ < 1 := by
