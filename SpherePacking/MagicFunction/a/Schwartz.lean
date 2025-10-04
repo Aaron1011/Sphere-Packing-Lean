@@ -6,10 +6,10 @@ Authors: Sidharth Hariharan
 M4R File
 -/
 
--- import Mathlib
 
 import SpherePacking.ForMathlib.RadialSchwartz.Multidimensional
 import SpherePacking.MagicFunction.a.Basic
+import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 
 /-! # `a` is a Schwartz Function
 
@@ -43,7 +43,33 @@ We need to use the Leibniz Integral Rule to differentiate under the integral sig
 -/
 
 theorem I₁'_smooth' : ContDiff ℝ ∞ RealIntegrals.I₁' := by
-  sorry
+  unfold RealIntegrals.I₁'
+  rw [contDiff_infty]
+  intro n
+  . by_cases n_eq_one: n = 1
+    .
+      simp [n_eq_one]
+      rw [contDiff_one_iff_deriv]
+      refine ⟨?_, ?_⟩
+      . unfold Differentiable
+        intro x
+        apply HasDerivAt.differentiableAt
+        apply (intervalIntegral.hasDerivAt_integral_of_dominated_loc_of_deriv_le _ _ _ _ _  _ _).2
+        . sorry
+        . sorry
+        . sorry
+        . sorry
+        .
+          -- Measurable
+          sorry
+        . sorry
+        . sorry
+        . sorry
+        . sorry
+        . sorry
+      . sorry
+    . sorry
+
 
 theorem I₂'_smooth' : ContDiff ℝ ∞ RealIntegrals.I₂' := by
   sorry

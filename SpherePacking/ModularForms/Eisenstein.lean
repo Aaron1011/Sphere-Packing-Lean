@@ -35,6 +35,8 @@ open Complex Real
 
 noncomputable section
 
+open Classical
+
 /- φ₀, φ₋₂ and φ₋₄, except we can't use - signs in subscripts for definitions... -/
 def φ₀ (z : ℍ) := (((E₂ z) * (E₄ z) - (E₆ z)) ^ 2) / (Δ z)
 def φ₂' (z : ℍ) := (E₄ z) * ((E₂ z) * (E₄ z) - (E₆ z)) / (Δ z)
@@ -43,6 +45,41 @@ def φ₄' (z : ℍ) := ((E₄ z) ^ 2) / (Δ z)
 def φ₀'' (z : ℂ) : ℂ := if hz : 0 < z.im then φ₀ ⟨z, hz⟩ else 0
 def φ₂'' (z : ℂ) : ℂ := if hz : 0 < z.im then φ₂' ⟨z, hz⟩ else 0
 def φ₄'' (z : ℂ) : ℂ := if hz : 0 < z.im then φ₄' ⟨z, hz⟩ else 0
+
+theorem φ₀''_continuous: Continuous φ₀'' := by
+  unfold φ₀''
+  rw [continuous_iff_continuousAt]
+  intro z
+  by_cases z_pos: 0 < z.im
+  .
+    have z_nonzero: z ≠ 0 := by sorry
+    apply ContinuousWithinAt.continuousAt (s := { z: ℂ | 0 < z.im})
+    .
+      rw [continuousWithinAt_iff_continuousAt_restrict]
+      .
+        conv =>
+          arg 1
+          equals (fun (a : { z: ℂ | 0 < z.im}) => φ₀ a) =>
+            simp
+            ext a
+            simp
+            intro ha
+            have other := a.property
+            rw [Set.mem_setOf] at other
+            linarith
+        have phi_cont: Continuous φ₀ := by
+          sorry
+      . simp
+        apply z_pos
+    .
+      apply IsOpen.mem_nhds
+      .
+        have foo := Complex.isOpen_im_gt_EReal 0
+        simpa using foo
+      . simp
+        apply z_pos
+  . sorry
+  apply Continuous.if (g := fun x => 0) (p := fun z => 0 < z.im)
 
 instance : atImInfty.NeBot := by
   rw [atImInfty, Filter.comap_neBot_iff ]
