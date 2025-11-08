@@ -515,7 +515,6 @@ theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
     (hu : u =O[atTop] fun n ↦ ((n ^ k : ℕ) : F)) : Summable fun n : ℕ ↦ ‖u n * r ^ n‖ := by
   sorry
 
-set_option maxHeartbeats 400000 in
 theorem norm_φ₀_le : ∃ C₀ > 0, ∀ z : ℍ, 1 / 2 < z.im →
     norm (φ₀ z) ≤ C₀ * rexp (-2 * π * z.im) := by
   -- This is a reasonable thing to do because all inputs are in nonnegative
@@ -629,9 +628,7 @@ theorem norm_φ₀_le : ∃ C₀ > 0, ∀ z : ℍ, 1 / 2 < z.im →
 
           rw [Asymptotics.isBigO_norm_norm]
 
-          have my_cast := Asymptotics.IsBigO.natCast_atTop (f := fun (x: ℝ) => ((x + 4)^5)) (g := (·)^5) ?_
-
-          apply my_cast
+          refine Asymptotics.IsBigO.natCast_atTop (f := fun (x: ℝ) => ((x + 4)^5)) (g := (·)^5) ?_
           apply Asymptotics.IsBigO.pow
           conv =>
             lhs
@@ -649,60 +646,10 @@ theorem norm_φ₀_le : ∃ C₀ > 0, ∀ z : ℍ, 1 / 2 < z.im →
           . apply isBigO_refl
           . grind
           . exact fun ⦃U⦄ a ↦ a
-
-
-          -- apply Filter.Tendsto.nonneg_add_atTop
-
-
-          -- apply Filter.tendsto_add_atTop_real
-
-          -- apply Filter.tendsto_add_atTop_nat
-          -- apply  Asymptotics.isBigO_atTop_natCast_rpow_of_tendsto_div_rpow
-          -- rw [← Function.comp_def]
-          -- rw [← Function.comp_def]
-
-
-          -- have foo := Asymptotics.IsBigO.comp_tendsto (f := ((· + 4)^5)) (g := (·)^5)
-          -- rw [← Asymptotics.IsBigO.comp_tendsto]
-
-          -- have my_cast := tendsto_natCast_atTop_iff (f := ((· + 4)^5)) (R := ℝ) (l := atTop)
-
-
-          -- sorry
-          -- rw [isBigO_iff]
-          -- use 32
-          -- rw [eventually_atTop]
-          -- use 4
-          -- intro n hn
-          -- have h1 : ‖(↑n + 4 : ℂ) ^ 5‖ = ((n : ℝ) + 4) ^ 5 := by
-          --   rw [Complex.norm_pow]
-          --   simp [Complex.norm_eq_abs, Complex.abs_ofReal]
-          --   norm_cast
-          -- have h2 : ((n : ℝ) + 4) ^ 5 ≤ (2 * n) ^ 5 := by
-          --   gcongr
-          --   omega
-          -- have h3 : (2 * (n : ℝ)) ^ 5 = 32 * n ^ 5 := by ring
-          -- have h4 : 32 * (n : ℝ) ^ 5 = 32 * ↑n ^ 5 := by norm_cast
-          -- linarith
-
-
-          -- norm_cast at my_cast
-          -- norm_cast
-          -- simp at my_cast
-          -- norm_cast at my_cast
-          -- --rw [my_cast]
-          -- -- Asymptotics.IsBigO.pow
-          -- grw [foo]
-          --sorry
         .
           norm_cast
           rw [tendsto_natCast_atTop_iff]
           apply Filter.tendsto_add_atTop_nat
-
-
-
-
-      -- summable_norm_mul_geometric_of_norm_lt_one'
 
 
     · -- This is where I need to use Bhavik's result
