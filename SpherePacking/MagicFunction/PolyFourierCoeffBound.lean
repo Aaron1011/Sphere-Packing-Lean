@@ -630,20 +630,11 @@ theorem norm_φ₀_le : ∃ C₀ > 0, ∀ z : ℍ, 1 / 2 < z.im →
 
           refine Asymptotics.IsBigO.natCast_atTop (f := fun (x: ℝ) => ((x + 4)^5)) (g := (·)^5) ?_
           apply Asymptotics.IsBigO.pow
-          conv =>
-            lhs
-            equals (fun x => 4 + x) =>
-              ext a
-              rw [add_comm]
-
-
-
-
           apply Asymptotics.IsBigO.add
+          . apply isBigO_refl
           .
             apply Asymptotics.IsLittleO.isBigO
             apply Asymptotics.isLittleO_const_id_atTop
-          . apply isBigO_refl
         .
           norm_cast
           rw [tendsto_natCast_atTop_iff]
