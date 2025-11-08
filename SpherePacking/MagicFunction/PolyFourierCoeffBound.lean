@@ -593,7 +593,7 @@ theorem norm_φ₀_le : ∃ C₀ > 0, ∀ z : ℍ, 1 / 2 < z.im →
         intro n
         rhs
         equals cexp (n * (↑π * I * ↑z)) =>
-          ring
+          ring_nf
 
       conv =>
         arg 1
@@ -604,20 +604,12 @@ theorem norm_φ₀_le : ∃ C₀ > 0, ∀ z : ℍ, 1 / 2 < z.im →
       rw [← summable_norm_iff]
       apply summable_norm_mul_geometric_of_norm_lt_one' (k := 5)
       .
-        rw [Complex.norm_exp]
-        simp
-        positivity
+        simp [Complex.norm_exp, z.im_pos, pi_pos]
       .
-        have foo := Asymptotics.IsBigO.comp_tendsto (f := c) (g := (fun n => (n : ℝ)^5)) (l := atTop) (β := Nat) (k := fun n => n + 4) (l' := atTop) hcpoly ?_
+        have foo := Asymptotics.IsBigO.comp_tendsto (f := c) (l := atTop) (β := Nat) (k := fun n => n + 4) (l' := atTop) hcpoly ?_
         .
-          rw [Function.comp_def] at foo
-          --rw [← Asymptotics.isBigO_norm_norm]
-          --rw [← Asymptotics.isBigO_norm_norm] at foo
-          apply Asymptotics.IsBigO.trans foo
+          apply foo.trans
           rw [Function.comp_def]
-          rename_bvar x → n
-
-
           push_cast
           rw [← Asymptotics.isBigO_norm_norm]
           conv =>
