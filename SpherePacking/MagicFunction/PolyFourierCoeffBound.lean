@@ -638,14 +638,12 @@ theorem norm_φ₀_le : ∃ C₀ > 0, ∀ z : ℍ, 1 / 2 < z.im →
 
 
 
-          have foo := Filter.Tendsto.nonneg_add_atTop (f := fun a => 4) (g := fun x => x) (l := atTop) ?_ ?_
+
           apply Asymptotics.IsBigO.add
           .
             apply Asymptotics.IsLittleO.isBigO
             apply Asymptotics.isLittleO_const_id_atTop
           . apply isBigO_refl
-          . grind
-          . exact fun ⦃U⦄ a ↦ a
         .
           norm_cast
           rw [tendsto_natCast_atTop_iff]
