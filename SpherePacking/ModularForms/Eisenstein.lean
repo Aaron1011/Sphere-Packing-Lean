@@ -46,13 +46,21 @@ def φ₀'' (z : ℂ) : ℂ := if hz : 0 < z.im then φ₀ ⟨z, hz⟩ else 0
 def φ₂'' (z : ℂ) : ℂ := if hz : 0 < z.im then φ₂' ⟨z, hz⟩ else 0
 def φ₄'' (z : ℂ) : ℂ := if hz : 0 < z.im then φ₄' ⟨z, hz⟩ else 0
 
+theorem φ₀_continuous: Continuous φ₀ := by
+  unfold φ₀
+  unfold E₂ E₄ E₆
+  fun_prop
+
 theorem φ₀''_continuous: Continuous φ₀'' := by
   unfold φ₀''
   rw [continuous_iff_continuousAt]
   intro z
   by_cases z_pos: 0 < z.im
   .
-    have z_nonzero: z ≠ 0 := by sorry
+    have z_nonzero: z ≠ 0 := by
+      by_contra!
+      rw [this] at z_pos
+      simp at z_pos
     apply ContinuousWithinAt.continuousAt (s := { z: ℂ | 0 < z.im})
     .
       rw [continuousWithinAt_iff_continuousAt_restrict]
@@ -69,6 +77,7 @@ theorem φ₀''_continuous: Continuous φ₀'' := by
             linarith
         have phi_cont: Continuous φ₀ := by
           sorry
+        refine Continuous.continuousAt phi_cont
       . simp
         apply z_pos
     .
@@ -79,7 +88,6 @@ theorem φ₀''_continuous: Continuous φ₀'' := by
       . simp
         apply z_pos
   . sorry
-  apply Continuous.if (g := fun x => 0) (p := fun z => 0 < z.im)
 
 instance : atImInfty.NeBot := by
   rw [atImInfty, Filter.comap_neBot_iff ]

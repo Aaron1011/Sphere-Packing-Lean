@@ -60,6 +60,11 @@ theorem I₁'_smooth' : ContDiff ℝ ∞ RealIntegrals.I₁' := by
         . sorry
         . sorry
         .
+         apply Filter.Eventually.of_forall
+         intro y
+         apply Continuous.aestronglyMeasurable
+         fun_prop
+
           -- Measurable
           sorry
         . sorry
